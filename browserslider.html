@@ -1,0 +1,118 @@
+<html>
+
+    <head>
+        <link rel="stylesheet" href="css/reset.css" type="text/css" media=screen>
+        <script language="javascript" type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+		<script language="javascript" type="text/javascript" src="js/browser_slider.js"></script>
+	</head>
+
+	<body>
+		<a href="#" id="see-demo-now" style="padding: 1em; display: block; ">Click me!</a>
+	</body>
+</html>
+
+<script>
+ $(document).ready(function () {
+                        $('#see-demo-now').on('click', function() {
+                                doSlide();
+                          });
+});
+
+        function doSlide() {
+			// Get website url
+            var winRef = window.open(self.location,'ResponsiveDesign','width=300,height=300');
+            var TRANSITION_DELAY = 0;
+            var TRANSITION_LEFT = 1;
+            var TRANSITION_RIGHT = 2;
+            var TRANSITION_BEGINNING = 3;
+            var TRANSITION_END = 4;
+
+            var UPS = 30;
+            var DESIRED_MIN_WIDTH = 325;
+            var TRANSITION_DURATION =3500;
+            var WAIT_DURATION = 4000;
+            var BEGINNING_DURATION = 1000;
+            var END_DURATION = 1000;
+
+            var winwidth = screen.width;
+            var winheight = screen.height;
+            var transition_width_gab = screen.width - DESIRED_MIN_WIDTH;
+            var transition_fixed_speed = transition_width_gab / TRANSITION_DURATION * UPS;
+
+            var speed = 0;
+            var accelerate = transition_fixed_speed / TRANSITION_DURATION * UPS * 4;
+            var transition_counter = 0;
+            var transition = TRANSITION_BEGINNING;
+
+            var id;
+
+
+            function intervalTrigger() {
+                return setInterval(function() {
+                    winRef.resizeTo(winwidth, winheight);
+                    if (transition == TRANSITION_BEGINNING) {
+                        if (transition_counter >= BEGINNING_DURATION) {
+                            transition = TRANSITION_LEFT;
+                            transition_counter = 0;
+                        }
+                    } else if (transition == TRANSITION_LEFT) {
+                        if (transition_counter >= TRANSITION_DURATION) {
+                            transition = TRANSITION_DELAY;
+                            transition_counter = 0;
+                            // Add this just incase timer is off in some browsers.
+                            winwidth = DESIRED_MIN_WIDTH;
+                            speed = 0;
+                        } else {
+                            if (winwidth <= DESIRED_MIN_WIDTH) {
+                                winwidth = DESIRED_MIN_WIDTH;
+                                speed = 0;
+                            } else {
+                                if (winwidth <= DESIRED_MIN_WIDTH + transition_width_gab / 2) {
+                                    speed += accelerate;
+                                } else {
+                                    speed -= accelerate;
+                                }
+                                winwidth += speed;
+                            }
+                        }
+                    } else if (transition == TRANSITION_RIGHT) {
+                        if (transition_counter >= TRANSITION_DURATION) {
+                            transition = TRANSITION_END;
+                            transition_counter = 0;
+                            // Add this just incase timer is off in some browsers
+                            winwidth = screen.width;
+                            speed = 0;
+                        } else {
+                            if (winwidth >= screen.width) {
+                                winwidth = screen.width;
+                                speed = 0;
+                            } else {
+                                                                if (winwidth <= DESIRED_MIN_WIDTH + transition_width_gab / 2) {
+                                                                        speed += accelerate;
+                                                                } else {
+                                                                        speed -= accelerate;
+                                                                }
+                                winwidth += speed;
+                            }
+                        }
+                    } else if (transition == TRANSITION_DELAY) {
+                        if (transition_counter >= WAIT_DURATION) {
+                            transition = TRANSITION_RIGHT;
+                            transition_counter = 0;
+                        }
+                    } else if (transition == TRANSITION_END) {
+                        if (transition_counter >= END_DURATION) {
+                            winRef.close();
+                            window.clearInterval(id);
+                        }
+                    }
+
+                    transition_counter += UPS;
+
+                }, UPS);
+            };
+            id = intervalTrigger();
+
+        }
+
+</script>
